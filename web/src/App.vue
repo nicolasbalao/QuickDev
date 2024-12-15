@@ -33,4 +33,5 @@ import { Button } from 'primevue'
     <span class="pi pi-search"></span>
     <span class="pi pi-user"></span>
   </div>
+  <h1>Test fonts Poppins</h1>
 </template>

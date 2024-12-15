@@ -16,3 +16,7 @@
 :root[class='app-dark'] {
   --body-bg: var(--p-surface-950);
 }
+
+* {
+  font-family: 'Poppins', sans-serif;
+}
