@@ -1,0 +1,8 @@
+
+body{
+    background-color: var(--body-bg);
+}
+
+:root[class='app-dark']{
+    --body-bg: var(--p-surface-950);
+}
