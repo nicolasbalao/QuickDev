@@ -44,5 +44,9 @@ export const themeConfig = {
   preset: appThemePreset,
   options: {
     darkModeSelector: '.app-dark',
+    cssLayers: {
+      name: 'primevue',
+      order: 'tailwind-base, primevue, tailwind-utilities',
+    },
   },
 }

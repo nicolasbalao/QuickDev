@@ -1,8 +1,18 @@
+@layer tailwind-base, primevue, tailwind-utilities;
 
-body{
+@layer tailwind-base {
+  @tailwind base;
+
+  body {
     background-color: var(--body-bg);
+  }
 }
 
-:root[class='app-dark']{
-    --body-bg: var(--p-surface-950);
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
+
+:root[class='app-dark'] {
+  --body-bg: var(--p-surface-950);
 }
