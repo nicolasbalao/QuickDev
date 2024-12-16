@@ -8,6 +8,7 @@ const appThemePreset = definePreset(Aura, {
         surface: {
           0: '#ffffff',
           50: '{zinc.50}',
+          // 50: '#f6f8fa',
           100: '{zinc.100}',
           200: '{zinc.200}',
           300: '{zinc.300}',
