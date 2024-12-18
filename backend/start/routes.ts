@@ -9,5 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 const HealthChecksController = () => import('#controllers/health_checks_controller')
+const ProjectsController = () => import('#controllers/projects_controller')
 
 router.get('/health', [HealthChecksController])
+router.post('/projects', [ProjectsController, 'create'])
