@@ -7,7 +7,7 @@ export const createProjectValidator = vine.compile(
       .maxLength(100)
       .regex(/^[a-zA-Z0-9._-]+$/)
       .regex(/^[^-_.]/)
-      .regex(/[^.]$/),
+      .regex(/[^-_.]$/),
     description: vine.string().maxLength(200).optional(),
   })
 )

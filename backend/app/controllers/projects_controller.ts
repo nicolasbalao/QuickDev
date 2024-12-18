@@ -6,8 +6,7 @@ import { createProjectValidator } from '../validators/project_validator.js'
 
 export default class ProjectsController {
   async create({ request, response }: HttpContext) {
-    const data = request.all()
-    const payload = await createProjectValidator.validate(data)
+    const payload = await request.validateUsing(createProjectValidator)
 
     const baseDir: string = env.get('PROJECT_PATH')
     const project_dir = baseDir + `/${payload.name}`
