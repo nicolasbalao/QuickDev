@@ -4,6 +4,9 @@ import { reactive, ref, type Ref } from 'vue'
 import { Form } from '@primevue/forms'
 import { InputText, Message, Button, Textarea, useToast } from 'primevue'
 import { createProject } from '../services/projectService'
+import { zodResolver } from '@primevue/forms/resolvers/zod'
+import { z } from 'zod'
+import type { AxiosError } from 'axios'
 
 const emit = defineEmits(['onCancel', 'onSuccess'])
 
@@ -15,17 +18,18 @@ const project = reactive({
 const isLoading: Ref<boolean> = ref(false)
 const toast = useToast()
 
-const resolver = ({ values }: FormResolverOptions) => {
-  const errors: any = {}
-
-  if (!values.name) {
-    errors.name = [{ message: 'Project Name is required' }]
-  }
-
-  return {
-    errors,
-  }
-}
+// const resolver = zodResolver(
+//   z.object({
+//     name: z
+//       .string()
+//       .min(1, { message: 'Project name is required' })
+//       .max(100, { message: 'Project name must be less than 100 chars' })
+//       .regex(/^[a-zA-Z0-9._-]+$/, { message: 'Accepted char aA-zZ-09._-' })
+//       .regex(/^[^-_.]/, { message: "¨Project name can't start with -_." })
+//       .regex(/[^-_.]$/, { message: "Project name can't end with '.-_'" }),
+//     description: z.string().max(200, { message: "Description can't exeed 200 chars" }).optional(),
+//   }),
+// )
 
 const onFormSubmit = async (form: FormSubmitEvent) => {
   if (!form.valid) {
@@ -41,11 +45,19 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
     await createProject(formatData)
     isLoading.value = false
   } catch (err: any) {
+    console.log('Err', err)
     isLoading.value = false
+
+    let detail = err instanceof Error ? err.message : 'Error while creating new project'
+
+    if (err.code === 'ERR_BAD_REQUEST') {
+      detail = err.response.data.errors[0].message
+    }
+
     toast.add({
       severity: 'error',
       summary: 'Http error',
-      detail: err instanceof Error ? err.message : 'Error while creating new project',
+      detail,
     })
     return
   }
@@ -60,16 +72,10 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
 </script>
 
 <template>
-  <Form
-    v-slot="$form"
-    :initial-values="project"
-    :resolver
-    @submit="onFormSubmit"
-    class="flex flex-col gap-5"
-  >
+  <Form v-slot="$form" :initial-values="project" @submit="onFormSubmit" class="flex flex-col gap-5">
     <div class="flex flex-col gap-1">
       <label for="name">Project name *</label>
-      <InputText name="name" type="text" fluid id="name" autofocus size="small" />
+      <InputText name="name" type="text" fluid id="name" autofocus size="small" required />
       <Message v-if="$form.name?.invalid" severity="error" size="small" variant="simple">
         {{ $form.name.error?.message }}
       </Message>
@@ -84,6 +90,9 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
         id="description"
         style="resize: none"
       ></Textarea>
+      <Message v-if="$form.description?.invalid" severity="error" size="small" variant="simple">
+        {{ $form.description.error?.message }}
+      </Message>
     </div>
 
     <div class="flex gap-4">
