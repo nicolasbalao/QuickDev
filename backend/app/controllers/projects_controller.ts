@@ -2,16 +2,19 @@ import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
 import { exec } from 'child_process'
 import Project from '#models/project'
+import { createProjectValidator } from '../validators/project_validator.js'
 
 export default class ProjectsController {
   async create({ request, response }: HttpContext) {
-    const body = request.body()
+    const data = request.all()
+    const payload = await createProjectValidator.validate(data)
 
     const baseDir: string = env.get('PROJECT_PATH')
-    const project_dir = baseDir + `/${body.name}`
+    const project_dir = baseDir + `/${payload.name}`
 
     const project: Project = await Project.create({
-      name: body.name,
+      name: payload.name,
+      description: payload.description,
       path: project_dir,
       public_repo: false,
     })
@@ -19,7 +22,7 @@ export default class ProjectsController {
     const projectSaved = await project.save()
 
     try {
-      await executeShellCommand(`mkdir ${body.name}`, baseDir)
+      await executeShellCommand(`mkdir ${payload.name}`, baseDir)
     } catch (error) {
       project.delete()
       response.internalServerError()
