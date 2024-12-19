@@ -35,9 +35,11 @@ onMounted(() => {
           >
             <span v-if="project.repoUrl" class="pi pi-github"></span>
             <span v-else class="pi pi-folder"></span>
-            <RouterLink :to="`/projects/${project.slug}`" class="hover:underline">{{
-              project.name
-            }}</RouterLink>
+            <RouterLink
+              :to="{ name: 'project', params: { slug: project.slug } }"
+              class="hover:underline"
+              >{{ project.name }}</RouterLink
+            >
           </li>
         </ul>
       </div>
