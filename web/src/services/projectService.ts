@@ -1,9 +1,14 @@
 import httpClient from '../helpers/httpClient'
 import type { Project } from '../interfaces/project-interface'
 
-export const createProject = async (formatData: { name: string; description?: string }) => {
-  const resp = await httpClient.post('/projects', { ...formatData })
-  return resp
+export interface CreateProjectDto {
+  name: string
+  description: string | null
+}
+
+export const createProject = async (formatData: CreateProjectDto): Promise<Project> => {
+  const resp = await httpClient.post<Project>('/projects', { ...formatData })
+  return resp.data
 }
 
 export const findAllProjects = async (): Promise<Project[]> => {

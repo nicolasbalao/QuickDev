@@ -9,7 +9,9 @@ const toast = useToast()
 watch(
   () => projectStore.error,
   () => {
-    toast.add({ severity: 'error', summary: 'Http error', detail: projectStore.error })
+    if (projectStore.error && projectStore.error.type === LoadingProjectStore.FETCHING) {
+      toast.add({ severity: 'error', summary: 'Http error', detail: projectStore.error.message })
+    }
   },
 )
 

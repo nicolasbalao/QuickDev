@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@primevue/forms'
-import { reactive, ref, watch, type Ref } from 'vue'
+import { reactive, watch } from 'vue'
 import { Form } from '@primevue/forms'
 import { InputText, Message, Button, Textarea, useToast } from 'primevue'
-import { createProject } from '../services/projectService'
+import { type CreateProjectDto } from '../services/projectService'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { z } from 'zod'
-import { useProjectStore } from '../stores/project.store'
+import { LoadingProjectStore, useProjectStore } from '../stores/project.store'
 
 const emit = defineEmits(['onCancel', 'onSuccess'])
 
@@ -15,14 +15,15 @@ const project = reactive({
   description: '',
 })
 
-const isLoading: Ref<boolean> = ref(false)
 const toast = useToast()
 const projectStore = useProjectStore()
 
 watch(
   () => projectStore.error,
   () => {
-    toast.add({ severity: 'error', summary: 'Http error', detail: projectStore.error })
+    if (projectStore.error && projectStore.error.type === LoadingProjectStore.CREATING) {
+      toast.add({ severity: 'error', summary: 'Http error', detail: projectStore.error.message })
+    }
   },
 )
 
@@ -43,30 +44,14 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
   if (!form.valid) {
     return
   }
-  let formatData: { name: string; description?: string } = {
+  let formatData: CreateProjectDto = {
     name: form.states['name'].value,
     description: form.states['description'].value,
   }
 
-  try {
-    isLoading.value = true
-    await createProject(formatData)
-    isLoading.value = false
-  } catch (err: any) {
-    console.log('Err', err)
-    isLoading.value = false
+  const success = await projectStore.handleCreateProject(formatData)
 
-    let detail = err instanceof Error ? err.message : 'Error while creating new project'
-
-    if (err.code === 'ERR_BAD_REQUEST') {
-      detail = err.response.data.errors[0].message
-    }
-
-    toast.add({
-      severity: 'error',
-      summary: 'Http error',
-      detail,
-    })
+  if (!success) {
     return
   }
 
@@ -89,7 +74,7 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
   >
     <div class="flex flex-col gap-1">
       <label for="name">Project name *</label>
-      <InputText name="name" type="text" fluid id="name" autofocus size="small" required />
+      <InputText name="name" type="text" fluid id="name" autofocus size="small" />
       <Message v-if="$form.name?.invalid" severity="error" size="small" variant="simple">
         {{ $form.name.error?.message }}
       </Message>
@@ -116,10 +101,16 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
         label="Cancel"
         class="flex-grow"
         @click="$emit('onCancel')"
-        :disabled="isLoading"
+        :disabled="projectStore.loading === LoadingProjectStore.CREATING"
         size="small"
       />
-      <Button type="submit" label="Create" class="flex-grow" :loading="isLoading" size="small" />
+      <Button
+        type="submit"
+        label="Create"
+        class="flex-grow"
+        :loading="projectStore.loading === LoadingProjectStore.CREATING"
+        size="small"
+      />
     </div>
   </Form>
 </template>
