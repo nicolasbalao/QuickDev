@@ -5,6 +5,12 @@ import Project from '#models/project'
 import { createProjectValidator } from '../validators/project_validator.js'
 
 export default class ProjectsController {
+  async findAll() {
+    const projects = await Project.all()
+
+    return projects
+  }
+
   async create({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createProjectValidator)
 

@@ -12,4 +12,8 @@ const HealthChecksController = () => import('#controllers/health_checks_controll
 const ProjectsController = () => import('#controllers/projects_controller')
 
 router.get('/health', [HealthChecksController])
-router.post('/projects', [ProjectsController, 'create'])
+
+router.group(() => {
+  router.post('/projects', [ProjectsController, 'create'])
+  router.get('/projects', [ProjectsController, 'findAll'])
+})
