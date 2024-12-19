@@ -40,9 +40,7 @@ export default class ProjectsController {
       response.internalServerError()
     }
 
-    return {
-      projectSaved,
-    }
+    return projectSaved
   }
 }
 
