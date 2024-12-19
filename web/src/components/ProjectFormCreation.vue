@@ -22,7 +22,12 @@ watch(
   () => projectStore.error,
   () => {
     if (projectStore.error && projectStore.error.type === LoadingProjectStore.CREATING) {
-      toast.add({ severity: 'error', summary: 'Http error', detail: projectStore.error.message })
+      toast.add({
+        severity: 'error',
+        summary: 'Http error',
+        detail: projectStore.error.message,
+        life: 3_000,
+      })
     }
   },
 )
@@ -59,6 +64,7 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
     severity: 'success',
     summary: 'Project created',
     detail: `Project ${formatData.name} was created successfully`,
+    life: 3_000,
   })
   emit('onSuccess')
 }
