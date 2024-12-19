@@ -2,7 +2,15 @@
 import type { FormSubmitEvent } from '@primevue/forms'
 import { reactive, watch } from 'vue'
 import { Form } from '@primevue/forms'
-import { InputText, Message, Button, Textarea, useToast } from 'primevue'
+import {
+  InputText,
+  Message,
+  Button,
+  Textarea,
+  useToast,
+  RadioButton,
+  RadioButtonGroup,
+} from 'primevue'
 import { type CreateProjectDto } from '../services/projectService'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { z } from 'zod'
@@ -13,6 +21,7 @@ const emit = defineEmits(['onCancel', 'onSuccess'])
 const project = reactive({
   name: '',
   description: '',
+  where: 'LOCAL',
 })
 
 const toast = useToast()
@@ -42,6 +51,7 @@ const resolver = zodResolver(
       .regex(/^[^-_.]/, { message: "¨Project name can't start with -_." })
       .regex(/[^-_.]$/, { message: "Project name can't end with '.-_'" }),
     description: z.string().max(200, { message: "Description can't exeed 200 chars" }).optional(),
+    where: z.enum(['LOCAL', 'GITHUB'] as const),
   }),
 )
 
@@ -52,6 +62,7 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
   let formatData: CreateProjectDto = {
     name: form.states['name'].value,
     description: form.states['description'].value,
+    where: form.states['where'].value,
   }
 
   const success = await projectStore.handleCreateProject(formatData)
@@ -98,6 +109,33 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
       <Message v-if="$form.description?.invalid" severity="error" size="small" variant="simple">
         {{ $form.description.error?.message }}
       </Message>
+    </div>
+
+    <div class="mb-4">
+      <h1 class="mb-2">Where</h1>
+      <RadioButtonGroup name="where" class="flex w-full gap-4">
+        <div
+          class="flex flex-grow items-center gap-4 rounded-md border border-solid p-4 hover:cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800"
+        >
+          <RadioButton input-id="local" value="LOCAL" />
+          <label for="local" class="flex items-center gap-2 hover:cursor-pointer">
+            <span class="pi pi-desktop" style="font-style: 1.9rem"></span>
+            <span>Git local</span>
+          </label>
+        </div>
+
+        <div
+          class="flex flex-grow items-center gap-4 rounded-md border border-solid p-4 hover:cursor-pointer hover:bg-surface-50 dark:hover:bg-surface-800"
+        >
+          <RadioButton input-id="github" value="GITHUB" />
+          <div class="flex items-center gap-2">
+            <label for="github" class="flex items-center gap-2 hover:cursor-pointer">
+              <span class="pi pi-github" style="font-size: 1.3rem"></span>
+              <span>Github</span>
+            </label>
+          </div>
+        </div>
+      </RadioButtonGroup>
     </div>
 
     <div class="flex gap-4">

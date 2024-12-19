@@ -30,7 +30,8 @@
     "#start/*": "./start/*.js",
     "#tests/*": "./tests/*.js",
     "#config/*": "./config/*.js",
-    "#helpers/*": "./app/helpers/*.js"
+    "#helpers/*": "./app/helpers/*.js",
+    "#interfaces/*": "./app/interfaces/*.js"
   },
   "devDependencies": {
     "@adonisjs/assembler": "^7.8.2",
@@ -57,6 +58,7 @@
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^21.5.1",
     "@vinejs/vine": "^3.0.0",
+    "axios": "^1.7.9",
     "luxon": "^3.5.0",
     "pg": "^8.13.1",
     "reflect-metadata": "^0.2.2"

@@ -3,8 +3,13 @@ import env from '#start/env'
 import Project from '#models/project'
 import { cloneProjectValidator, createProjectValidator } from '../validators/project_validator.js'
 import { gitClone, executeGitInit, executeShellCommand } from '#helpers/command_helper'
+import { GithubService } from '#services/github_service'
+import { inject } from '@adonisjs/core'
 
+@inject()
 export default class ProjectsController {
+  constructor(protected GithubService: GithubService) {}
+
   async findAll() {
     const projects = await Project.all()
 
@@ -13,35 +18,58 @@ export default class ProjectsController {
 
   async create({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createProjectValidator)
-
     const baseDir: string = env.get('PROJECT_PATH')
-    const project_dir = baseDir + `/${payload.name}`
-
-    const project: Project = await Project.create({
+    const projectDir = baseDir + `/${payload.name}`
+    const project = await Project.create({
       name: payload.name,
       description: payload.description,
-      path: project_dir,
-      public_repo: false,
+      path: projectDir,
+      publicRepo: true,
     })
-
-    const projectSaved = await project.save()
-
     try {
-      await executeShellCommand(`mkdir ${payload.name}`, baseDir)
-    } catch (error) {
-      // TODO: refactor with sql transaction
-      project.delete()
-      response.internalServerError()
-    }
+      let repoUrl = ''
 
-    try {
-      await executeGitInit(project_dir)
+      if (payload.where === 'GITHUB') {
+        const githubResponse = await this.GithubService.createRepository({
+          name: payload.name,
+          description: payload.description,
+        })
+
+        if (!githubResponse) {
+          response.internalServerError('Github repository creation failed')
+          throw new Error('Github repository creation failed')
+        }
+
+        repoUrl = githubResponse.html_url
+        project.repoUrl = repoUrl
+        project.apiRepoUrl = githubResponse.url
+
+        project.save()
+      }
+
+      if (payload.where === 'LOCAL') {
+        await executeShellCommand(`mkdir ${payload.name}`, baseDir)
+        await executeGitInit(projectDir)
+      }
+
+      if (payload.where === 'GITHUB') {
+        await gitClone(repoUrl, baseDir)
+      }
+
+      return response.ok(project)
     } catch (error) {
       project.delete()
-      response.internalServerError()
-    }
+      if (payload.where === 'LOCAL') {
+        await executeShellCommand(`rm -rf ${payload.name}`, baseDir)
+      }
 
-    return projectSaved
+      if (error.message === 'Github repository creation failed') {
+        return response.internalServerError('Unable to creaete the repository on Github')
+      }
+
+      console.error('Error during project creation:', error)
+      return response.internalServerError('An error occurred during project creation')
+    }
   }
 
   async clone({ request, response }: HttpContext) {
@@ -68,8 +96,8 @@ export default class ProjectsController {
     // Create project
     const project = await Project.create({
       name: projectName,
-      repo_url: payload.url,
-      public_repo: true,
+      repoUrl: payload.url,
+      publicRepo: true,
       path: `${baseDir}/${projectName}`,
     })
     console.info('Project', project)

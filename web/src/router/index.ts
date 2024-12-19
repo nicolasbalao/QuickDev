@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
 import ProjectView from '../views/ProjectView.vue'
+import DevPlaygroundView from '../views/DevPlaygroundView.vue'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -14,6 +15,11 @@ const router = createRouter({
       path: '/projects/:slug',
       name: 'project',
       component: ProjectView,
+    },
+    {
+      path: '/dev',
+      name: 'dev',
+      component: DevPlaygroundView,
     },
   ],
 })

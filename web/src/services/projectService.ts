@@ -4,6 +4,7 @@ import type { Project } from '../interfaces/project-interface'
 export interface CreateProjectDto {
   name: string
   description: string | null
+  where: 'LOCAL' | 'GITHUB'
 }
 
 export const createProject = async (formatData: CreateProjectDto): Promise<Project> => {
@@ -17,6 +18,6 @@ export const findAllProjects = async (): Promise<Project[]> => {
 }
 
 export const cloneRepo = async (url: string): Promise<Project> => {
-  const resp = await httpClient.post<Project>('/projects/github/clone', {url})
+  const resp = await httpClient.post<Project>('/projects/github/clone', { url })
   return resp.data
 }

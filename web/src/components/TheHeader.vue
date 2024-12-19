@@ -21,6 +21,7 @@ const togglePoppover = (event: any) => {
   >
     <div class="ml-4">
       <RouterLink :to="{ name: 'home' }" class="text-xl">QuickDev</RouterLink>
+      <RouterLink :to="{ name: 'dev' }" class="ml-8">dev</RouterLink>
     </div>
 
     <div class="flex items-center">

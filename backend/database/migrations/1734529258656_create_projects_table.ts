@@ -16,6 +16,7 @@ export default class extends BaseSchema {
 
       table.text('description').defaultTo('')
       table.string('repo_url')
+      table.string('api_repo_url')
       table.boolean('public_repo')
 
       table.timestamp('created_at')

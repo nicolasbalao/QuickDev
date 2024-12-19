@@ -22,10 +22,13 @@ export default class Project extends BaseModel {
   declare description: string
 
   @column()
-  declare repo_url: string | null
+  declare repoUrl: string | null
 
   @column()
-  declare public_repo: boolean
+  declare apiRepoUrl: string | null
+
+  @column()
+  declare publicRepo: boolean
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
