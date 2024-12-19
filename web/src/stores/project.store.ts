@@ -1,12 +1,18 @@
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 import type { Project } from '../interfaces/project-interface'
-import { createProject, findAllProjects, type CreateProjectDto } from '../services/projectService'
+import {
+  cloneRepo,
+  createProject,
+  findAllProjects,
+  type CreateProjectDto,
+} from '../services/projectService'
 import { contructErrorMessage } from '../helpers/contructErrorMessage.helper'
 
 export enum LoadingProjectStore {
   FETCHING,
   CREATING,
+  CLONNING,
   NONE,
 }
 
@@ -50,13 +56,7 @@ export const useProjectStore = defineStore('project', () => {
     prepareActions(LoadingProjectStore.CREATING)
     try {
       const project = await createProject(formData)
-      console.log('Project created', project)
-      if (projects.value) {
-        projects.value.push(project)
-      } else {
-        projects.value = [project]
-      }
-      console.log('Projects', projects.value)
+      addProject(project)
       return true
     } catch (err) {
       error.value = {
@@ -69,6 +69,35 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
+  const handleCloneRepo = async (url: string): Promise<boolean> => {
+    prepareActions(LoadingProjectStore.CLONNING)
+    try {
+      const project = await cloneRepo(url)
+      addProject(project)
+    } catch (err) {
+      error.value = {
+        type: LoadingProjectStore.CLONNING,
+        message: contructErrorMessage(err, `Failed to clone the repo at the url: ${url}`),
+      }
+      return false
+    } finally {
+      loading.value = LoadingProjectStore.NONE
+    }
+    return true
+  }
+
+  /**
+   * UTILS
+   */
+
+  const addProject = (project: Project) => {
+    if (projects.value) {
+      projects.value.push(project)
+      return
+    }
+    projects.value = [project]
+  }
+
   return {
     projects,
     loading,
@@ -76,5 +105,6 @@ export const useProjectStore = defineStore('project', () => {
 
     lazyLoadingProjects,
     handleCreateProject,
+    handleCloneRepo,
   }
 })

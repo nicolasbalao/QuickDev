@@ -15,3 +15,8 @@ export const findAllProjects = async (): Promise<Project[]> => {
   const resp = await httpClient.get<Project[]>('/projects')
   return resp.data
 }
+
+export const cloneRepo = async (url: string): Promise<Project> => {
+  const resp = await httpClient.post<Project>('/projects/github/clone', {url})
+  return resp.data
+}
