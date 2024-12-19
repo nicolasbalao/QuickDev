@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { FormResolverOptions, FormSubmitEvent } from '@primevue/forms'
-import { reactive, ref, type Ref } from 'vue'
+import type { FormSubmitEvent } from '@primevue/forms'
+import { reactive, ref, watch, type Ref } from 'vue'
 import { Form } from '@primevue/forms'
 import { InputText, Message, Button, Textarea, useToast } from 'primevue'
 import { createProject } from '../services/projectService'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { z } from 'zod'
-import type { AxiosError } from 'axios'
+import { useProjectStore } from '../stores/project.store'
 
 const emit = defineEmits(['onCancel', 'onSuccess'])
 
@@ -17,19 +17,27 @@ const project = reactive({
 
 const isLoading: Ref<boolean> = ref(false)
 const toast = useToast()
+const projectStore = useProjectStore()
 
-// const resolver = zodResolver(
-//   z.object({
-//     name: z
-//       .string()
-//       .min(1, { message: 'Project name is required' })
-//       .max(100, { message: 'Project name must be less than 100 chars' })
-//       .regex(/^[a-zA-Z0-9._-]+$/, { message: 'Accepted char aA-zZ-09._-' })
-//       .regex(/^[^-_.]/, { message: "¨Project name can't start with -_." })
-//       .regex(/[^-_.]$/, { message: "Project name can't end with '.-_'" }),
-//     description: z.string().max(200, { message: "Description can't exeed 200 chars" }).optional(),
-//   }),
-// )
+watch(
+  () => projectStore.error,
+  () => {
+    toast.add({ severity: 'error', summary: 'Http error', detail: projectStore.error })
+  },
+)
+
+const resolver = zodResolver(
+  z.object({
+    name: z
+      .string()
+      .min(1, { message: 'Project name is required' })
+      .max(100, { message: 'Project name must be less than 100 chars' })
+      .regex(/^[a-zA-Z0-9._-]+$/, { message: 'Accepted char aA-zZ-09._-' })
+      .regex(/^[^-_.]/, { message: "¨Project name can't start with -_." })
+      .regex(/[^-_.]$/, { message: "Project name can't end with '.-_'" }),
+    description: z.string().max(200, { message: "Description can't exeed 200 chars" }).optional(),
+  }),
+)
 
 const onFormSubmit = async (form: FormSubmitEvent) => {
   if (!form.valid) {
@@ -72,7 +80,13 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
 </script>
 
 <template>
-  <Form v-slot="$form" :initial-values="project" @submit="onFormSubmit" class="flex flex-col gap-5">
+  <Form
+    v-slot="$form"
+    :resolver
+    :initial-values="project"
+    @submit="onFormSubmit"
+    class="flex flex-col gap-5"
+  >
     <div class="flex flex-col gap-1">
       <label for="name">Project name *</label>
       <InputText name="name" type="text" fluid id="name" autofocus size="small" required />
