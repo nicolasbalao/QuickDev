@@ -9,7 +9,16 @@ export async function executeGitInit(path: string) {
   }
 }
 
-export function executeShellCommand(command: string, path: string) {
+export async function gitClone(url: string, path: string) {
+  try {
+    await executeShellCommand(`git clone ${url}`, path, true)
+  } catch (error) {
+    console.log(error)
+    throw new Error(`Erreur: ${error.message}`)
+  }
+}
+
+export function executeShellCommand(command: string, path: string, disableStderr = false) {
   return new Promise((resolve, rejects) => {
     exec(command, { cwd: path }, (error, stdout, stderr) => {
       if (error) {
@@ -17,7 +26,7 @@ export function executeShellCommand(command: string, path: string) {
         return
       }
 
-      if (stderr) {
+      if (stderr && !disableStderr) {
         rejects(`Stderr: ${stderr}`)
         return
       }

@@ -11,3 +11,9 @@ export const createProjectValidator = vine.compile(
     description: vine.string().maxLength(200).optional(),
   })
 )
+
+export const cloneProjectValidator = vine.compile(
+  vine.object({
+    url: vine.string().url(),
+  })
+)

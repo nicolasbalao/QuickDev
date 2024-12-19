@@ -30,4 +30,5 @@ export default await Env.create(new URL('../', import.meta.url), {
   DB_DATABASE: Env.schema.string(),
 
   PROJECT_PATH: Env.schema.string(),
+  GITHUB_TOKEN: Env.schema.string.optional(),
 })
