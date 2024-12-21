@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import ProjectView from '../views/ProjectView.vue'
-import DevPlaygroundView from '../views/DevPlaygroundView.vue'
+import { useProjectStore } from '../stores/project.store'
 
 const router = createRouter({
   history: createWebHistory(),
@@ -9,17 +7,35 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: () => import('../views/HomeView.vue'),
     },
     {
       path: '/projects/:slug',
       name: 'project',
-      component: ProjectView,
+      component: () => import('../views/ProjectView.vue'),
+      beforeEnter: async (to, from, next) => {
+        const slug = to.params.slug
+        const projectStore = useProjectStore()
+
+        const project = await projectStore.fetchProjectBySlug(slug as string)
+
+        if (!project) {
+          next({ name: 'NotFound' })
+          return false
+        }
+
+        next()
+      },
     },
     {
       path: '/dev',
       name: 'dev',
-      component: DevPlaygroundView,
+      component: () => import('../views/DevPlaygroundView.vue'),
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'NotFound',
+      component: () => import('../views/NotFoundView.vue'),
     },
   ],
 })

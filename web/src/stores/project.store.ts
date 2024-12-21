@@ -6,11 +6,13 @@ import {
   createProject,
   findAllProjects,
   type CreateProjectDto,
+  findProjectBySlug as serviceFindProjectBySlug,
 } from '../services/projectService'
 import { contructErrorMessage } from '../helpers/contructErrorMessage.helper'
 
 export enum LoadingProjectStore {
   FETCHING,
+  FETCHING_SLUG,
   CREATING,
   CLONNING,
   NONE,
@@ -22,7 +24,7 @@ export interface ProjectStoreErrror {
 }
 
 export const useProjectStore = defineStore('project', () => {
-  let projects: Ref<Project[] | null> = ref(null)
+  let projects: Ref<Project[]> = ref([])
   let loading: Ref<LoadingProjectStore> = ref(LoadingProjectStore.NONE)
   let error: Ref<ProjectStoreErrror | null> = ref(null)
 
@@ -44,9 +46,40 @@ export const useProjectStore = defineStore('project', () => {
     }
   }
 
-  const lazyLoadingProjects = async () => {
-    if (!projects.value) await fetchProjects()
+  // TODO: see lazyloading
+  const fetchProjectBySlug = async (slug: string): Promise<Project | undefined> => {
+    prepareActions(LoadingProjectStore.FETCHING_SLUG)
+
+    try {
+      const project = await serviceFindProjectBySlug(slug)
+
+      if (project) {
+        const projectIndex = projects.value.findIndex((p) => p.id === project.id)
+
+        if (projectIndex === -1) {
+          projects.value.push(project)
+        } else {
+          projects.value[projectIndex] = project
+        }
+      }
+
+      return project
+    } catch (err) {
+      error.value = {
+        type: LoadingProjectStore.FETCHING_SLUG,
+        message: contructErrorMessage(err, `Error while fectching project with the slug: ${slug}`),
+      }
+      return undefined
+    } finally {
+      loading.value = LoadingProjectStore.NONE
+    }
   }
+
+  const lazyLoadingProjects = async () => {
+    if (projects.value.length === 0) await fetchProjects()
+  }
+
+  const findProjectBySlug = (slug: string) => projects.value.find((p) => p.slug === slug)
 
   /**
    * MUTATIONS
@@ -106,5 +139,7 @@ export const useProjectStore = defineStore('project', () => {
     lazyLoadingProjects,
     handleCreateProject,
     handleCloneRepo,
+    findProjectBySlug,
+    fetchProjectBySlug,
   }
 })

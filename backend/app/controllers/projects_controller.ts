@@ -105,6 +105,14 @@ export default class ProjectsController {
 
     return projectSaved
   }
+
+  async findBySlug({ params }: HttpContext) {
+    const slug = params.slug
+
+    const project = Project.findByOrFail({ slug: slug })
+    return project
+  }
+
   #extractRepoName(url: string): string {
     const parts = url.split('/')
     const repoWithGit = parts[parts.length - 1]

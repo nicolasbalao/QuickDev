@@ -8,7 +8,7 @@ import TheSideBar from '../components/TheSideBar.vue'
     <TheHeader />
     <div class="flex flex-1 gap-8">
       <TheSideBar class="" />
-      <div class="mt-8">
+      <div class="mr-6 mt-8 flex-grow">
         <slot></slot>
       </div>
     </div>

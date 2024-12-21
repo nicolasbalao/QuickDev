@@ -17,6 +17,11 @@ export const findAllProjects = async (): Promise<Project[]> => {
   return resp.data
 }
 
+export const findProjectBySlug = async (slug: string): Promise<Project | undefined> => {
+  const resp = await httpClient.get<Project | undefined>(`/projects/${slug}`)
+  return resp.data
+}
+
 export const cloneRepo = async (url: string): Promise<Project> => {
   const resp = await httpClient.post<Project>('/projects/github/clone', { url })
   return resp.data
