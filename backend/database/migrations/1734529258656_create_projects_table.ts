@@ -9,15 +9,13 @@ export default class extends BaseSchema {
 
       table.string('name', 50).notNullable().unique()
       table.string('slug', 50).notNullable().unique()
-
-      table.string('type', 50)
-
       table.string('path').notNullable()
-
       table.text('description').defaultTo('')
       table.string('repo_url')
       table.string('api_repo_url')
       table.boolean('public_repo')
+
+      table.integer('template_id').unsigned().references('project_templates.id')
 
       table.timestamp('created_at')
       table.timestamp('updated_at')

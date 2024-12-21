@@ -1,6 +1,8 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, column, hasOne } from '@adonisjs/lucid/orm'
 import stringHelpers from '@adonisjs/core/helpers/string'
+import ProjectTemplate from '#models/project_template'
+import type { HasOne } from '@adonisjs/lucid/types/relations'
 
 export default class Project extends BaseModel {
   @column({ isPrimary: true })
@@ -35,6 +37,13 @@ export default class Project extends BaseModel {
 
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
+
+  /**
+   * RELATIONS
+   */
+
+  @hasOne(() => ProjectTemplate)
+  declare template: HasOne<typeof ProjectTemplate>
 
   @beforeCreate()
   static async slugify(project: Project) {
