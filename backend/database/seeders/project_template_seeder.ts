@@ -1,12 +1,12 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import ProjectTemplate from '../../app/models/project_template.js'
+import ProjectTemplate from '#models/project_template'
 
 export default class extends BaseSeeder {
   async run() {
     await ProjectTemplate.createMany([
       {
         name: 'Git',
-        command: 'git init',
+        command: 'git init {{ name }}',
         description: 'Init git repository',
       },
       {

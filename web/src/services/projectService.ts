@@ -5,6 +5,7 @@ export interface CreateProjectDto {
   name: string
   description: string | null
   where: 'LOCAL' | 'GITHUB'
+  templateId?: number
 }
 
 export const createProject = async (formatData: CreateProjectDto): Promise<Project> => {

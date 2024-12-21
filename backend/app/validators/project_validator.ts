@@ -10,6 +10,7 @@ export const createProjectValidator = vine.compile(
       .regex(/[^-_.]$/),
     description: vine.string().maxLength(200).optional(),
     where: vine.enum(['LOCAL', 'GITHUB'] as const),
+    templateId: vine.number().optional(),
   })
 )
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FormSubmitEvent } from '@primevue/forms'
-import { reactive, watch } from 'vue'
+import { onMounted, reactive, watch } from 'vue'
 import { Form } from '@primevue/forms'
 import {
   InputText,
@@ -10,11 +10,13 @@ import {
   useToast,
   RadioButton,
   RadioButtonGroup,
+  Select,
 } from 'primevue'
 import { type CreateProjectDto } from '../services/projectService'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { z } from 'zod'
 import { LoadingProjectStore, useProjectStore } from '../stores/project.store'
+import { useProjectTemplateStore } from '../stores/project_template.store'
 
 const emit = defineEmits(['onCancel', 'onSuccess'])
 
@@ -22,10 +24,12 @@ const project = reactive({
   name: '',
   description: '',
   where: 'LOCAL',
+  template: 1,
 })
 
 const toast = useToast()
 const projectStore = useProjectStore()
+const projectTemplateStore = useProjectTemplateStore()
 
 watch(
   () => projectStore.error,
@@ -52,6 +56,7 @@ const resolver = zodResolver(
       .regex(/[^-_.]$/, { message: "Project name can't end with '.-_'" }),
     description: z.string().max(200, { message: "Description can't exeed 200 chars" }).optional(),
     where: z.enum(['LOCAL', 'GITHUB'] as const),
+    template: z.number().optional(),
   }),
 )
 
@@ -63,6 +68,7 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
     name: form.states['name'].value,
     description: form.states['description'].value,
     where: form.states['where'].value,
+    templateId: form.states['template'].value,
   }
 
   const success = await projectStore.handleCreateProject(formatData)
@@ -79,6 +85,10 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
   })
   emit('onSuccess')
 }
+
+onMounted(async () => {
+  await projectTemplateStore.lazyloadingProjectTemplates()
+})
 </script>
 
 <template>
@@ -111,7 +121,7 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
       </Message>
     </div>
 
-    <div class="mb-4">
+    <div>
       <h1 class="mb-2">Where</h1>
       <RadioButtonGroup name="where" class="flex w-full gap-4">
         <div
@@ -138,7 +148,20 @@ const onFormSubmit = async (form: FormSubmitEvent) => {
       </RadioButtonGroup>
     </div>
 
-    <div class="flex gap-4">
+    <div v-if="$form.where?.value === 'LOCAL'" class="flex w-full flex-col gap-1">
+      <label for="template">Template starter</label>
+      <Select
+        class="flex-grow"
+        name="template"
+        :options="projectTemplateStore.projectTemplates"
+        option-label="name"
+        option-value="id"
+        :default-value="1"
+        id="template"
+      ></Select>
+    </div>
+
+    <div class="mt-4 flex gap-4">
       <Button
         type="button"
         severity="secondary"

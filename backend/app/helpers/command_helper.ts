@@ -35,3 +35,13 @@ export function executeShellCommand(command: string, path: string, disableStderr
     })
   })
 }
+
+// TODO make unit tests on this one
+export function prepareTemplateCommand(command: string, data: Record<string, string>): string {
+  return command.replace(/{{\s*(\w+)\s*}}/g, (_, key) => {
+    if (key in data) {
+      return data[key]
+    }
+    throw new Error(`La variable "${key}" n'a pas été trouvée dans les données fournies`)
+  })
+}

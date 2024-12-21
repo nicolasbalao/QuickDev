@@ -1,10 +1,11 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
 import Project from '#models/project'
-import { cloneProjectValidator, createProjectValidator } from '../validators/project_validator.js'
-import { gitClone, executeGitInit, executeShellCommand } from '#helpers/command_helper'
+import { cloneProjectValidator, createProjectValidator } from '#validators/project_validator'
+import { gitClone, executeShellCommand, prepareTemplateCommand } from '#helpers/command_helper'
 import { GithubService } from '#services/github_service'
 import { inject } from '@adonisjs/core'
+import ProjectTemplate from '#models/project_template'
 
 @inject()
 export default class ProjectsController {
@@ -25,6 +26,7 @@ export default class ProjectsController {
       description: payload.description,
       path: projectDir,
       publicRepo: true,
+      templateId: payload.templateId,
     })
     try {
       let repoUrl = ''
@@ -43,18 +45,20 @@ export default class ProjectsController {
         repoUrl = githubResponse.html_url
         project.repoUrl = repoUrl
         project.apiRepoUrl = githubResponse.url
-
-        project.save()
       }
 
       if (payload.where === 'LOCAL') {
-        await executeShellCommand(`mkdir ${payload.name}`, baseDir)
-        await executeGitInit(projectDir)
+        let template = await ProjectTemplate.findOrFail(payload.templateId)
+        let command = prepareTemplateCommand(template.command, { name: payload.name })
+
+        await executeShellCommand(command, baseDir, true)
       }
 
       if (payload.where === 'GITHUB') {
         await gitClone(repoUrl, baseDir)
       }
+
+      project.save()
 
       return response.ok(project)
     } catch (error) {
