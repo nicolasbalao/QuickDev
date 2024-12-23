@@ -3,7 +3,7 @@ import ProjectTemplate from '#models/project_template'
 
 export default class extends BaseSeeder {
   async run() {
-    await ProjectTemplate.createMany([
+    await ProjectTemplate.updateOrCreateMany('name', [
       {
         name: 'Git',
         command: 'git init {{ name }}',
