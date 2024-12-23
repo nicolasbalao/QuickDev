@@ -1,0 +1,26 @@
+# Node modules
+node_modules/
+
+# Fichiers de log
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# Fichiers de build générés (pour ne pas les inclure dans l'image)
+dist/
+
+# Cache de npm et Yarn
+.npm/
+.yarn/
+
+# IDE & fichiers spécifiques à l'environnement
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Caches de Vue
+.cache/
+
+# Fichiers locaux (par exemple, .env)
+.env
