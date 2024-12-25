@@ -1,8 +1,9 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, belongsTo, column, computed } from '@adonisjs/lucid/orm'
 import stringHelpers from '@adonisjs/core/helpers/string'
 import ProjectTemplate from '#models/project_template'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import env from '#start/env'
 
 export default class Project extends BaseModel {
   @column({ isPrimary: true })
@@ -47,6 +48,14 @@ export default class Project extends BaseModel {
 
   @belongsTo(() => ProjectTemplate)
   declare template: BelongsTo<typeof ProjectTemplate>
+
+  @computed()
+  get localPath() {
+    const localBaseDir = env.get('LOCAL_PROJECT_PATH')
+    const projectDir = this.path.split('/').pop()
+
+    return `${localBaseDir}/${projectDir}`
+  }
 
   @beforeCreate()
   static async slugify(project: Project) {

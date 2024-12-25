@@ -19,7 +19,7 @@ export default class ProjectsController {
 
   async create({ request, response }: HttpContext) {
     const payload = await request.validateUsing(createProjectValidator)
-    const baseDir: string = env.get('PROJECT_PATH')
+    const baseDir: string = env.get('CONTAINER_PROJECT_PATH')
     const projectDir = baseDir + `/${payload.name}`
     const project = await Project.create({
       name: payload.name,
@@ -84,9 +84,7 @@ export default class ProjectsController {
     }
 
     const payload = await request.validateUsing(cloneProjectValidator)
-    const baseDir = env.get('PROJECT_PATH')
-
-    // https://github.com/nicolasbalao/PHP-MVC-boilerplate.git
+    const baseDir = env.get('CONTAINER_PROJECT_PATH')
 
     try {
       await gitClone(payload.url, baseDir)

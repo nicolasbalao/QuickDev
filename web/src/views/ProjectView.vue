@@ -36,7 +36,7 @@ onMounted(() => {
         </template>
 
         <a
-          :href="`vscode://vscode-remote/wsl+Ubuntu/${project.path}`"
+          :href="`vscode://vscode-remote/wsl+Ubuntu/${project.localPath}`"
           class="flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-white"
         >
           <span class="pi pi-pen-to-square"></span>

@@ -4,6 +4,7 @@ export interface Project {
   slug: string
   type: string | null
   path: string
+  localPath: string
   description: string
   repoUrl: string | null
   publicRepo: boolean
