@@ -1,4 +1,5 @@
 import { exec } from 'child_process'
+import { GitCommit } from '#interfaces/git_commit_interface'
 
 export async function executeGitInit(path: string) {
   try {
@@ -14,6 +15,36 @@ export async function gitClone(url: string, path: string) {
     await executeShellCommand(`git clone ${url}`, path, true)
   } catch (error) {
     console.log(error)
+    throw new Error(`Erreur: ${error.message}`)
+  }
+}
+
+export async function getGitCommits(projectPath: string): Promise<GitCommit[]> {
+  try {
+    console.log('Path', projectPath)
+    let commitStringJson = await executeShellCommand(
+      `git log --pretty=format:'{"hash":"%H","author":"%an","email":"%ae","date":"%ad","message":"%s"},' --date=iso`,
+      projectPath
+    )
+
+    commitStringJson = `[${(commitStringJson as string).slice(0, -1)}]`
+    const commitsRaw = JSON.parse(commitStringJson as string)
+
+    if (commitsRaw.length === 0) {
+      return []
+    }
+
+    console.log('Commits', commitsRaw)
+    const commits: GitCommit[] = commitsRaw.map((c: any) => ({
+      hash: c.hash,
+      author: c.author,
+      message: c.message,
+      date: c.date,
+    }))
+
+    return commits
+  } catch (error) {
+    console.error(error)
     throw new Error(`Erreur: ${error.message}`)
   }
 }

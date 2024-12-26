@@ -2,7 +2,12 @@ import type { HttpContext } from '@adonisjs/core/http'
 import env from '#start/env'
 import Project from '#models/project'
 import { cloneProjectValidator, createProjectValidator } from '#validators/project_validator'
-import { gitClone, executeShellCommand, prepareTemplateCommand } from '#helpers/command_helper'
+import {
+  gitClone,
+  executeShellCommand,
+  prepareTemplateCommand,
+  getGitCommits,
+} from '#helpers/command_helper'
 import { GithubService } from '#services/github_service'
 import { inject } from '@adonisjs/core'
 import ProjectTemplate from '#models/project_template'
@@ -112,7 +117,21 @@ export default class ProjectsController {
     const slug = params.slug
 
     const project = Project.findByOrFail({ slug: slug })
+
     return project
+  }
+
+  async getDetails({ params }: HttpContext) {
+    const slug = params.slug
+
+    const project = await Project.findByOrFail({ slug: slug })
+
+    const commits = await getGitCommits(project.path)
+
+    return {
+      ...project.$attributes,
+      commits: commits,
+    }
   }
 
   #extractRepoName(url: string): string {
