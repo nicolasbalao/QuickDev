@@ -5,8 +5,8 @@ import {
   cloneRepo,
   createProject,
   findAllProjects,
+  projectDetails,
   type CreateProjectDto,
-  findProjectBySlug as serviceFindProjectBySlug,
 } from '../services/projectService'
 import { contructErrorMessage } from '../helpers/contructErrorMessage.helper'
 
@@ -51,7 +51,7 @@ export const useProjectStore = defineStore('project', () => {
     prepareActions(LoadingProjectStore.FETCHING_SLUG)
 
     try {
-      const project = await serviceFindProjectBySlug(slug)
+      const project = await projectDetails(slug)
 
       if (project) {
         const projectIndex = projects.value.findIndex((p) => p.id === project.id)
@@ -139,7 +139,6 @@ export const useProjectStore = defineStore('project', () => {
     lazyLoadingProjects,
     handleCreateProject,
     handleCloneRepo,
-    findProjectBySlug,
     fetchProjectBySlug,
   }
 })

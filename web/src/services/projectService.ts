@@ -18,8 +18,8 @@ export const findAllProjects = async (): Promise<Project[]> => {
   return resp.data
 }
 
-export const findProjectBySlug = async (slug: string): Promise<Project | undefined> => {
-  const resp = await httpClient.get<Project | undefined>(`/projects/${slug}`)
+export const projectDetails = async (slug: string): Promise<Project | undefined> => {
+  const resp = await httpClient.get<Project | undefined>(`/projects/${slug}/details`)
   return resp.data
 }
 

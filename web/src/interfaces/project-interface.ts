@@ -10,4 +10,5 @@ export interface Project {
   publicRepo: boolean
   created_at: Date
   updated_at: Date
+  [key: string]: any
 }
