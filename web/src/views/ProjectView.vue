@@ -3,8 +3,7 @@ import { onMounted, ref, watch, type Ref } from 'vue'
 import { useProjectStore } from '../stores/project.store'
 import { useRoute } from 'vue-router'
 import type { Project } from '../interfaces/project-interface'
-import { Timeline } from 'primevue'
-import { formatDate, timeAgo } from '../helpers/date_helper'
+import CommitTimeLine from '../components/CommitTimeLine.vue'
 
 const route = useRoute()
 
@@ -25,7 +24,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section v-if="project" class="flex h-full w-full flex-col gap-4">
+  <section v-if="project" class="flex h-full w-full flex-col gap-8">
     <div class="flex w-full items-center justify-between">
       <h1>Project {{ project.name }}</h1>
 
@@ -46,24 +45,11 @@ onMounted(async () => {
         </a>
       </div>
     </div>
-    <div class="flex-grow">
-      <div class="bg-red-50">Commits</div>
+    <div class="flex flex-grow justify-end">
       <template v-if="project.commits">
-        <Timeline :value="project.commits" align="alternate">
-          <template #opposite="slotProps">
-            <span class="text-sm text-surface-400"
-              >Commits on {{ formatDate(slotProps.item.date) }}</span
-            >
-          </template>
-          <template #content="slotProps">
-            <div class="flex flex-col gap-2 rounded-md border border-solid border-surface-100 p-4">
-              <span class="text-sm text-surface-800">{{ slotProps.item.message }}</span>
-              <span class="text-sm text-surface-300"
-                >{{ slotProps.item.author }} commited {{ timeAgo(slotProps.item.date) }} agos</span
-              >
-            </div>
-          </template>
-        </Timeline>
+        <div class="w-1/2">
+          <CommitTimeLine :commits="project.commits" />
+        </div>
       </template>
     </div>
   </section>

@@ -11,6 +11,8 @@ import {
 import { GithubService } from '#services/github_service'
 import { inject } from '@adonisjs/core'
 import ProjectTemplate from '#models/project_template'
+import { GitCommit, GroupedGitCommit } from '../interfaces/git_commit_interface.js'
+import { DateTime } from 'luxon'
 
 @inject()
 export default class ProjectsController {
@@ -126,11 +128,18 @@ export default class ProjectsController {
 
     const project = await Project.findByOrFail({ slug: slug })
 
-    const commits = await getGitCommits(project.path)
+    let commits = await getGitCommits(project.path)
+
+    if (project.repoUrl) {
+      commits = commits.map((commit) => ({
+        ...commit,
+        url: `${project.repoUrl}/commit/${commit.hash}`,
+      }))
+    }
 
     return {
       ...project.$attributes,
-      commits: commits,
+      commits: this.#groupCommitByDay(commits),
     }
   }
 
@@ -139,5 +148,19 @@ export default class ProjectsController {
     const repoWithGit = parts[parts.length - 1]
 
     return repoWithGit.replace(/\.git$/, '')
+  }
+
+  #groupCommitByDay(commits: GitCommit[]): GroupedGitCommit {
+    return commits.reduce<GroupedGitCommit>((grouped, commit) => {
+      const date = commit.date.split(' ')[0] as string
+
+      if (!grouped[date]) {
+        grouped[date] = []
+      }
+
+      grouped[date].push(commit)
+
+      return grouped
+    }, {})
   }
 }
