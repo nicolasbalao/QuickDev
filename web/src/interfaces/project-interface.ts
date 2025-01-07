@@ -1,4 +1,4 @@
-import type { GroupedGitCommit } from './git_commit_interface'
+import type { GitCommit } from './git_commit_interface'
 
 export interface Project {
   id: number
@@ -12,6 +12,6 @@ export interface Project {
   publicRepo: boolean
   created_at: Date
   updated_at: Date
-  commits: GroupedGitCommit
+  latestCommits: GitCommit[]
   [key: string]: any
 }

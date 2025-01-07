@@ -3,7 +3,7 @@ import { onMounted, ref, watch, type Ref } from 'vue'
 import { useProjectStore } from '../stores/project.store'
 import { useRoute } from 'vue-router'
 import type { Project } from '../interfaces/project-interface'
-import CommitTimeLine from '../components/CommitTimeLine.vue'
+import LastestGitCommit from '../components/LastestGitCommit.vue'
 
 const route = useRoute()
 
@@ -45,11 +45,9 @@ onMounted(async () => {
         </a>
       </div>
     </div>
-    <div class="flex flex-grow justify-end">
-      <template v-if="project.commits">
-        <div class="w-1/2">
-          <CommitTimeLine :commits="project.commits" />
-        </div>
+    <div class="flex grow items-end justify-end">
+      <template v-if="project.latestCommits">
+        <LastestGitCommit :commits="project.latestCommits" />
       </template>
     </div>
   </section>

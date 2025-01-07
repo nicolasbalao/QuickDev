@@ -7,7 +7,7 @@ defineProps<{ commits: GroupedGitCommit }>()
 </script>
 
 <template>
-  <Timeline :value="Object.values(commits)" align="alternate">
+  <Timeline :value="Object.values(commits)">
     <template #content="slotProps">
       <div class="flex flex-col gap-2">
         <span class="text-sm text-surface-400">
@@ -16,7 +16,7 @@ defineProps<{ commits: GroupedGitCommit }>()
 
         <div
           v-for="commit of slotProps.item"
-          class="mb-2 flex flex-col gap-2 rounded-md border border-solid border-surface-100 p-4"
+          class="mb-2 flex flex-col gap-2 rounded-md border border-solid border-surface-100 p-2 shadow-sm"
         >
           <a
             v-if="commit.url"
@@ -28,7 +28,7 @@ defineProps<{ commits: GroupedGitCommit }>()
                 text: '!text-sm',
               },
             }"
-            class="line-clamp-2 text-sm text-surface-700 hover:cursor-pointer hover:underline"
+            class="line-clamp-2 text-left text-sm text-surface-700 hover:cursor-pointer hover:underline"
             >{{ commit.message }}</a
           >
           <span
@@ -40,7 +40,7 @@ defineProps<{ commits: GroupedGitCommit }>()
                 text: '!text-sm',
               },
             }"
-            class="line-clamp-2 text-sm text-surface-700"
+            class="line-clamp-2 text-left text-sm text-surface-700"
           >
             {{ commit.message }}
           </span>
@@ -61,5 +61,12 @@ defineProps<{ commits: GroupedGitCommit }>()
 .p-avatar {
   width: 1.2rem;
   height: 1.2rem;
+}
+</style>
+
+<style>
+.p-timeline-event-opposite {
+  width: 0;
+  display: none !important;
 }
 </style>
