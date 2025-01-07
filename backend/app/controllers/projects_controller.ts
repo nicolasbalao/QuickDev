@@ -6,13 +6,12 @@ import {
   gitClone,
   executeShellCommand,
   prepareTemplateCommand,
-  getGitCommits,
+  getLatestGitCommits,
 } from '#helpers/command_helper'
 import { GithubService } from '#services/github_service'
 import { inject } from '@adonisjs/core'
 import ProjectTemplate from '#models/project_template'
 import { GitCommit, GroupedGitCommit } from '../interfaces/git_commit_interface.js'
-import { DateTime } from 'luxon'
 
 @inject()
 export default class ProjectsController {
@@ -128,10 +127,10 @@ export default class ProjectsController {
 
     const project = await Project.findByOrFail({ slug: slug })
 
-    let commits = await getGitCommits(project.path)
+    let latestCommits = await getLatestGitCommits(project.path)
 
     if (project.repoUrl) {
-      commits = commits.map((commit) => ({
+      latestCommits = latestCommits.map((commit: any) => ({
         ...commit,
         url: `${project.repoUrl}/commit/${commit.hash}`,
       }))
@@ -139,7 +138,7 @@ export default class ProjectsController {
 
     return {
       ...project.$attributes,
-      commits: this.#groupCommitByDay(commits),
+      latestCommits,
     }
   }
 
@@ -150,6 +149,8 @@ export default class ProjectsController {
     return repoWithGit.replace(/\.git$/, '')
   }
 
+  // Keep it for the page with changelogs with all commits
+  // @ts-ignore
   #groupCommitByDay(commits: GitCommit[]): GroupedGitCommit {
     return commits.reduce<GroupedGitCommit>((grouped, commit) => {
       const date = commit.date.split(' ')[0] as string

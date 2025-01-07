@@ -19,11 +19,15 @@ export async function gitClone(url: string, path: string) {
   }
 }
 
-export async function getGitCommits(projectPath: string): Promise<GitCommit[]> {
+/**
+ * Take 5 latest commits
+ * @param projectPath
+ * @returns
+ */
+export async function getLatestGitCommits(projectPath: string): Promise<GitCommit[]> {
   try {
-    console.log('Path', projectPath)
     let commitStringJson = await executeShellCommand(
-      `git log --pretty=format:'{"hash":"%H","author":"%an","email":"%ae","date":"%ad","message":"%s"},' --date=iso`,
+      `git log -n 5 --pretty=format:'{"hash":"%H","author":"%an","email":"%ae","date":"%ad","message":"%s"},' --date=iso`,
       projectPath
     )
 
@@ -34,7 +38,6 @@ export async function getGitCommits(projectPath: string): Promise<GitCommit[]> {
       return []
     }
 
-    console.log('Commits', commitsRaw)
     const commits: GitCommit[] = commitsRaw.map((c: any) => ({
       hash: c.hash,
       author: c.author,
