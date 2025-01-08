@@ -47,8 +47,13 @@ export async function getLatestGitCommits(projectPath: string): Promise<GitCommi
 
     return commits
   } catch (error) {
+    const noCommitsYetRegex = /fatal: your current branch '.*' does not have any commits yet/
     console.error(error)
-    throw new Error(`Erreur: ${error.message}`)
+    if (noCommitsYetRegex.test(error)) {
+      console.warn('No commits on the current branch. Returning an empty commit list.')
+      return []
+    }
+    throw new Error(error)
   }
 }
 
