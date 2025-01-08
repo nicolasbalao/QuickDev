@@ -17,7 +17,7 @@ const router = createRouter({
         const slug = to.params.slug
         const projectStore = useProjectStore()
 
-        const project = await projectStore.fetchProjectBySlug(slug as string)
+        const project = await projectStore.getLazyProjectDetail(slug as string)
 
         if (!project) {
           next({ name: 'NotFound' })

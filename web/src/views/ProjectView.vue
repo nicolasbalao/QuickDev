@@ -14,12 +14,12 @@ const project: Ref<Project | undefined> = ref(undefined)
 watch(
   () => route.params.slug,
   async () => {
-    project.value = await projectStore.fetchProjectBySlug(route.params.slug as string)
+    project.value = await projectStore.getLazyProjectDetail(route.params.slug as string)
   },
 )
 
 onMounted(async () => {
-  project.value = await projectStore.fetchProjectBySlug(route.params.slug as string)
+  project.value = await projectStore.getLazyProjectDetail(route.params.slug as string)
 })
 </script>
 

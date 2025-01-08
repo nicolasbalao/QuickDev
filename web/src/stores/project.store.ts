@@ -81,6 +81,17 @@ export const useProjectStore = defineStore('project', () => {
 
   const findProjectBySlug = (slug: string) => projects.value.find((p) => p.slug === slug)
 
+  const getLazyProjectDetail = async (slug: string): Promise<Project | undefined> => {
+    let project: Project | undefined = undefined
+    project = findProjectBySlug(slug)
+
+    if (!project) {
+      project = await fetchProjectBySlug(slug)
+    }
+
+    return project
+  }
+
   /**
    * MUTATIONS
    */
@@ -137,8 +148,8 @@ export const useProjectStore = defineStore('project', () => {
     error,
 
     lazyLoadingProjects,
+    getLazyProjectDetail,
     handleCreateProject,
     handleCloneRepo,
-    fetchProjectBySlug,
   }
 })
