@@ -11,7 +11,7 @@ import {
 import { GithubService } from '#services/github_service'
 import { inject } from '@adonisjs/core'
 import ProjectTemplate from '#models/project_template'
-import { GitCommit, GroupedGitCommit } from '../interfaces/git_commit_interface.js'
+import { GitCommit, GroupedGitCommit } from '#interfaces/git_commit_interface'
 
 @inject()
 export default class ProjectsController {
@@ -108,7 +108,6 @@ export default class ProjectsController {
       publicRepo: true,
       path: `${baseDir}/${projectName}`,
     })
-    console.info('Project', project)
     const projectSaved = project.save()
 
     return projectSaved

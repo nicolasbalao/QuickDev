@@ -1,5 +1,4 @@
 import { BaseSchema } from '@adonisjs/lucid/schema'
-import { DateTime } from 'luxon'
 
 export default class extends BaseSchema {
   protected tableName = 'work_sessions'
@@ -21,7 +20,7 @@ export default class extends BaseSchema {
         })
         .defaultTo('IN_PROGRESS')
 
-      table.timestamp('started_at').defaultTo(DateTime.now())
+      table.timestamp('started_at').defaultTo(this.now())
       table.timestamp('ended_at')
 
       table.timestamp('created_at')
@@ -30,7 +29,7 @@ export default class extends BaseSchema {
   }
 
   async down() {
-    this.schema.raw('DROP TYPE IF EXISTS "work_session_status"')
     this.schema.dropTable(this.tableName)
+    this.schema.raw('DROP TYPE IF EXISTS "work_session_status"')
   }
 }

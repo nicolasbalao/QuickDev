@@ -14,7 +14,7 @@ export default class WorkSession extends BaseModel {
   @column()
   declare status: WorkSessionStatus
 
-  @column.dateTime()
+  @column.dateTime({ autoCreate: true })
   declare startedAt: DateTime
 
   @column.dateTime()

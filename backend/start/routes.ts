@@ -11,6 +11,7 @@ import router from '@adonisjs/core/services/router'
 const HealthChecksController = () => import('#controllers/health_checks_controller')
 const ProjectsController = () => import('#controllers/projects_controller')
 const ProjectTemplatesController = () => import('#controllers/project_templates_controller')
+const WorkSessionsController = () => import('#controllers/work_sessions_controller')
 
 router.get('/health', [HealthChecksController])
 
@@ -22,4 +23,11 @@ router.group(() => {
   // IMPORTANT KEEP it last because :slug will overwrite /projects/templates etc...
   router.get('/projects/:slug', [ProjectsController, 'findBySlug'])
   router.get('/projects/:slug/details', [ProjectsController, 'getDetails'])
+  router.get('/projects/:projectId/work-sessions', [WorkSessionsController, 'findByProject'])
+})
+
+router.group(() => {
+  router.get('/work-sessions', [WorkSessionsController, 'findAll'])
+  router.post('/work-sessions/start', [WorkSessionsController, 'startSession'])
+  router.post('/work-sessions/stop', [WorkSessionsController, 'stopSessions'])
 })
