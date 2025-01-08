@@ -1,9 +1,10 @@
 import { DateTime } from 'luxon'
-import { BaseModel, beforeCreate, belongsTo, column, computed } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, belongsTo, column, computed, hasMany } from '@adonisjs/lucid/orm'
 import stringHelpers from '@adonisjs/core/helpers/string'
 import ProjectTemplate from '#models/project_template'
-import type { BelongsTo } from '@adonisjs/lucid/types/relations'
+import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import env from '#start/env'
+import WorkSession from '#models/work_session'
 
 export default class Project extends BaseModel {
   @column({ isPrimary: true })
@@ -48,6 +49,9 @@ export default class Project extends BaseModel {
 
   @belongsTo(() => ProjectTemplate)
   declare template: BelongsTo<typeof ProjectTemplate>
+
+  @hasMany(() => WorkSession)
+  declare workSessions: HasMany<typeof WorkSession>
 
   @computed()
   get localPath() {
