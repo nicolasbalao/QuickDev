@@ -125,6 +125,7 @@ export default class ProjectsController {
     const slug = params.slug
 
     const project = await Project.findByOrFail({ slug: slug })
+    await project.load('workSessions')
 
     let latestCommits = await getLatestGitCommits(project.path)
 
@@ -136,7 +137,7 @@ export default class ProjectsController {
     }
 
     return {
-      ...project.$attributes,
+      ...project.toJSON(),
       latestCommits,
     }
   }

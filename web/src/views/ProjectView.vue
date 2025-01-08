@@ -4,12 +4,22 @@ import { useProjectStore } from '../stores/project.store'
 import { useRoute } from 'vue-router'
 import type { Project } from '../interfaces/project-interface'
 import LastestGitCommit from '../components/LastestGitCommit.vue'
+import { Button, Dialog } from 'primevue'
+import { useWorkSessionStore } from '../stores/work_session.store'
+import StopWorkSessionForm from '../components/StopWorkSessionForm.vue'
 
 const route = useRoute()
 
 const projectStore = useProjectStore()
+const workSessionStore = useWorkSessionStore()
+
+const stopDialogVisible: Ref<boolean> = ref(false)
 
 const project: Ref<Project | undefined> = ref(undefined)
+
+const toggleStopDialog = (event: any) => {
+  stopDialogVisible.value = !stopDialogVisible.value
+}
 
 watch(
   () => route.params.slug,
@@ -43,6 +53,22 @@ onMounted(async () => {
           <span class="pi pi-pen-to-square"></span>
           <span>Vscode</span>
         </a>
+
+        {{ workSessionStore.activeWorkSession || 'No Active Session' }}
+        <Button
+          icon="pi pi-play"
+          label="work"
+          :disabled="workSessionStore.activeWorkSession !== undefined"
+          @click="workSessionStore.startSession(project.id)"
+        />
+        <Button @click="toggleStopDialog" icon="pi pi-stop-circle" label="work" />
+
+        <Dialog v-model:visible="stopDialogVisible" modal header="What Did You Achieve?">
+          <StopWorkSessionForm
+            @on-cancel="stopDialogVisible = false"
+            @on-success="stopDialogVisible = false"
+          />
+        </Dialog>
       </div>
     </div>
     <div class="flex grow items-end justify-end">
