@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { computed, ref, type Ref } from 'vue'
 import { WorkSessionStatus, type WorkSession } from '../interfaces/work_session.interface'
 import {
+  apiFindActiveWorkSession,
   apiStartSession,
   apiStopSession,
   type StopWorkSessionDto,
@@ -17,12 +18,27 @@ export const useWorkSessionStore = defineStore('work-session', () => {
     workSessions.value.find((ws) => ws.status === WorkSessionStatus.IN_PROGRESS),
   )
 
+  const fetchActiveWorkSession = async () => {
+    isLoading.value = true
+    error.value = null
+    try {
+      const activeWorkSession = await apiFindActiveWorkSession()
+      if (activeWorkSession) {
+        workSessions.value.push(activeWorkSession)
+      }
+    } catch (err) {
+      error.value = contructErrorMessage(err, `Error while fetching active work session`)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // Utils
   const updateWorkSession = (workSession: WorkSession) => {
     const index = workSessions.value.findIndex((ws) => ws.id === workSession.id)
 
     // TODO: see if it's good way (optmistic)
-    if (index > 0) {
+    if (index >= 0) {
       workSessions.value[index] = workSession
     } else {
       workSessions.value.push(workSession)
@@ -36,6 +52,7 @@ export const useWorkSessionStore = defineStore('work-session', () => {
 
     try {
       const workSession = await apiStartSession(projectId)
+
       workSessions.value.push(workSession)
       return true
     } catch (err) {
@@ -75,6 +92,7 @@ export const useWorkSessionStore = defineStore('work-session', () => {
 
     activeWorkSession,
 
+    fetchActiveWorkSession,
     startSession,
     stopSession,
   }

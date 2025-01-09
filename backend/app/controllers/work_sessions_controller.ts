@@ -17,6 +17,7 @@ export default class WorkSessionsController {
 
     const workSession = await WorkSession.create({
       projectId: payload.projectId,
+      status: WorkSessionStatus.IN_PROGRESS,
     })
 
     return await workSession.save()
@@ -46,5 +47,9 @@ export default class WorkSessionsController {
     const workSessions = await WorkSession.findManyBy({ projectId })
 
     return workSessions
+  }
+
+  async findActiveWorkSession(): Promise<WorkSession | null> {
+    return await WorkSession.findBy({ status: WorkSessionStatus.IN_PROGRESS })
   }
 }

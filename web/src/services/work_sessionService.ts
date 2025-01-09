@@ -21,3 +21,8 @@ export const apiStopSession = async (stopData: StopWorkSessionDto): Promise<Work
   })
   return resp.data
 }
+
+export const apiFindActiveWorkSession = async (): Promise<WorkSession | null> => {
+  const resp = await httpClient.get<WorkSession | null>('/work-sessions/active')
+  return resp.data
+}

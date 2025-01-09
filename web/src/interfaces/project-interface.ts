@@ -1,4 +1,5 @@
 import type { GitCommit } from './git_commit_interface'
+import type { WorkSession } from './work_session.interface'
 
 export interface Project {
   id: number
@@ -13,5 +14,6 @@ export interface Project {
   created_at: Date
   updated_at: Date
   latestCommits: GitCommit[]
+  workSessions: WorkSession[]
   [key: string]: any
 }

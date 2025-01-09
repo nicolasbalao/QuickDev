@@ -28,6 +28,7 @@ router.group(() => {
 
 router.group(() => {
   router.get('/work-sessions', [WorkSessionsController, 'findAll'])
+  router.get('/work-sessions/active', [WorkSessionsController, 'findActiveWorkSession'])
   router.post('/work-sessions/start', [WorkSessionsController, 'startSession'])
   router.post('/work-sessions/stop', [WorkSessionsController, 'stopSessions'])
 })

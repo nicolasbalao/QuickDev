@@ -8,7 +8,7 @@ defineProps<{ commits: GitCommit[] }>()
 
 <template>
   <div
-    class="flex flex-col gap-2 rounded-md border border-solid border-surface-100 p-4 dark:border-surface-700"
+    class="flex flex-col gap-2 rounded-md border border-solid border-surface-100 p-4 text-sm dark:border-surface-700"
   >
     <span class="text-sm font-semibold">Latest changes</span>
     <!-- TODO change this v-if -->
@@ -52,7 +52,9 @@ defineProps<{ commits: GitCommit[] }>()
       </Timeline>
     </template>
     <template v-else>
-      <span>No commits </span>
+      <div class="flex h-full w-full items-center justify-center">
+        <span>No commits</span>
+      </div>
     </template>
   </div>
 </template>

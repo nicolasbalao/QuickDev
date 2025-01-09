@@ -124,8 +124,12 @@ export default class ProjectsController {
   async getDetails({ params }: HttpContext) {
     const slug = params.slug
 
-    const project = await Project.findByOrFail({ slug: slug })
-    await project.load('workSessions')
+    let project = await Project.query()
+      .where('slug', slug)
+      .preload('workSessions', (query) => {
+        query.orderBy('started_at', 'desc').limit(5)
+      })
+      .firstOrFail()
 
     let latestCommits = await getLatestGitCommits(project.path)
 
