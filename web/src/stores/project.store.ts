@@ -12,7 +12,7 @@ import { contructErrorMessage } from '../helpers/contructErrorMessage.helper'
 
 export enum LoadingProjectStore {
   FETCHING,
-  FETCHING_SLUG,
+  FETCHING_CURRENT,
   CREATING,
   CLONNING,
   NONE,
@@ -49,26 +49,19 @@ export const useProjectStore = defineStore('project', () => {
 
   // TODO: see lazyloading
   const fetchProjectDetailsBySlug = async (slug: string): Promise<Project | undefined> => {
-    prepareActions(LoadingProjectStore.FETCHING_SLUG)
+    prepareActions(LoadingProjectStore.FETCHING_CURRENT)
 
     try {
       const project = await projectDetails(slug)
 
       if (project) {
-        // const projectIndex = projects.value.findIndex((p) => p.id === project.id)
-
-        // if (projectIndex === -1) {
-        //   projects.value.push(project)
-        // } else {
-        //   projects.value[projectIndex] = project
-        // }
         currentProject.value = project
       }
 
       return project
     } catch (err) {
       error.value = {
-        type: LoadingProjectStore.FETCHING_SLUG,
+        type: LoadingProjectStore.FETCHING_CURRENT,
         message: contructErrorMessage(err, `Error while fectching project with the slug: ${slug}`),
       }
       return undefined
@@ -84,6 +77,24 @@ export const useProjectStore = defineStore('project', () => {
   /**
    * MUTATIONS
    */
+
+  const refreshCurrentProject = async () => {
+    if (!currentProject.value) {
+      return
+    }
+    const slug = currentProject.value.slug
+
+    try {
+      await fetchProjectDetailsBySlug(slug)
+    } catch (err) {
+      error.value = {
+        type: LoadingProjectStore.FETCHING_CURRENT,
+        message: contructErrorMessage(err, `Error while fectching project with the slug: ${slug}`),
+      }
+    } finally {
+      loading.value = LoadingProjectStore.FETCHING_CURRENT
+    }
+  }
 
   const handleCreateProject = async (formData: CreateProjectDto): Promise<boolean> => {
     prepareActions(LoadingProjectStore.CREATING)
@@ -139,6 +150,7 @@ export const useProjectStore = defineStore('project', () => {
 
     lazyLoadingProjects,
     fetchProjectDetailsBySlug,
+    refreshCurrentProject,
     handleCreateProject,
     handleCloneRepo,
   }

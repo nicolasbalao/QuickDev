@@ -5,10 +5,12 @@ import { useWorkSessionStore } from '../stores/work_session.store'
 import { Form, type FormSubmitEvent } from '@primevue/forms'
 import { zodResolver } from '@primevue/forms/resolvers/zod'
 import { z } from 'zod'
+import { useProjectStore } from '../stores/project.store'
 
 const emit = defineEmits(['onCancel', 'onSuccess'])
 const workSessionStore = useWorkSessionStore()
 const toast = useToast()
+const projectStore = useProjectStore()
 
 const stopSessionForm = reactive({
   note: '',
@@ -37,6 +39,7 @@ const onSubmit = async (form: FormSubmitEvent) => {
       detail: 'Work session successfully stoped',
       life: 1_000,
     })
+    projectStore.refreshCurrentProject()
     emit('onSuccess')
   } else {
     toast.add({
