@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { onMounted, ref, watch, type Ref } from 'vue'
+import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import { useProjectStore } from '../stores/project.store'
 import { useRoute } from 'vue-router'
-import type { Project } from '../interfaces/project-interface'
 import LastestGitCommit from '../components/LastestGitCommit.vue'
 import { Button, Dialog, useToast } from 'primevue'
 import { useWorkSessionStore } from '../stores/work_session.store'
@@ -17,7 +16,7 @@ const toast = useToast()
 
 const stopDialogVisible: Ref<boolean> = ref(false)
 
-const project: Ref<Project | undefined> = ref(undefined)
+const project = computed(() => projectStore.currentProject)
 
 const toggleStopDialog = (event: any) => {
   stopDialogVisible.value = !stopDialogVisible.value
@@ -46,12 +45,12 @@ const startWorkSession = async (projectId: number) => {
 watch(
   () => route.params.slug,
   async () => {
-    project.value = await projectStore.getLazyProjectDetail(route.params.slug as string)
+    await projectStore.fetchProjectDetailsBySlug(route.params.slug as string)
   },
 )
 
 onMounted(async () => {
-  project.value = await projectStore.getLazyProjectDetail(route.params.slug as string)
+  await projectStore.fetchProjectDetailsBySlug(route.params.slug as string)
 })
 </script>
 

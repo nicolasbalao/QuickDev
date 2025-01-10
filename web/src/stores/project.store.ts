@@ -25,6 +25,7 @@ export interface ProjectStoreErrror {
 
 export const useProjectStore = defineStore('project', () => {
   let projects: Ref<Project[]> = ref([])
+  let currentProject: Ref<Project | null> = ref(null)
   let loading: Ref<LoadingProjectStore> = ref(LoadingProjectStore.NONE)
   let error: Ref<ProjectStoreErrror | null> = ref(null)
 
@@ -47,20 +48,21 @@ export const useProjectStore = defineStore('project', () => {
   }
 
   // TODO: see lazyloading
-  const fetchProjectBySlug = async (slug: string): Promise<Project | undefined> => {
+  const fetchProjectDetailsBySlug = async (slug: string): Promise<Project | undefined> => {
     prepareActions(LoadingProjectStore.FETCHING_SLUG)
 
     try {
       const project = await projectDetails(slug)
 
       if (project) {
-        const projectIndex = projects.value.findIndex((p) => p.id === project.id)
+        // const projectIndex = projects.value.findIndex((p) => p.id === project.id)
 
-        if (projectIndex === -1) {
-          projects.value.push(project)
-        } else {
-          projects.value[projectIndex] = project
-        }
+        // if (projectIndex === -1) {
+        //   projects.value.push(project)
+        // } else {
+        //   projects.value[projectIndex] = project
+        // }
+        currentProject.value = project
       }
 
       return project
@@ -77,19 +79,6 @@ export const useProjectStore = defineStore('project', () => {
 
   const lazyLoadingProjects = async () => {
     if (projects.value.length === 0) await fetchProjects()
-  }
-
-  const findProjectBySlug = (slug: string) => projects.value.find((p) => p.slug === slug)
-
-  const getLazyProjectDetail = async (slug: string): Promise<Project | undefined> => {
-    let project: Project | undefined = undefined
-    project = findProjectBySlug(slug)
-
-    if (!project) {
-      project = await fetchProjectBySlug(slug)
-    }
-
-    return project
   }
 
   /**
@@ -144,11 +133,12 @@ export const useProjectStore = defineStore('project', () => {
 
   return {
     projects,
+    currentProject,
     loading,
     error,
 
     lazyLoadingProjects,
-    getLazyProjectDetail,
+    fetchProjectDetailsBySlug,
     handleCreateProject,
     handleCloneRepo,
   }
