@@ -4,11 +4,11 @@ import TheSideBar from '../components/TheSideBar.vue'
 </script>
 
 <template>
-  <main class="flex h-screen w-screen flex-col overflow-y-hidden">
+  <main class="flex h-screen w-screen flex-col">
     <TheHeader />
-    <div class="flex flex-1 gap-8">
-      <TheSideBar class="" />
-      <div class="max-h-screen w-full overflow-y-scroll">
+    <div class="flex h-full flex-1 gap-8 overflow-hidden">
+      <TheSideBar />
+      <div class="flex h-full grow flex-col overflow-y-auto">
         <div class="h-full w-full pb-2 pr-6 pt-8">
           <slot></slot>
         </div>

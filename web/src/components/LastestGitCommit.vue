@@ -2,16 +2,13 @@
 import { Timeline } from 'primevue'
 import { timeAgo } from '../helpers/date_helper'
 import type { GitCommit } from '../interfaces/git_commit_interface'
+import WidgetContainer from './WidgetContainer.vue'
 
 defineProps<{ commits: GitCommit[] }>()
 </script>
 
 <template>
-  <div
-    class="flex flex-col gap-2 rounded-md border border-solid border-surface-100 p-4 text-sm dark:border-surface-700"
-  >
-    <span class="text-sm font-semibold">Latest changes</span>
-    <!-- TODO change this v-if -->
+  <WidgetContainer title="Latest changes">
     <template v-if="commits.length > 0">
       <Timeline :value="Object.values(commits)">
         <template #content="slotProps">
@@ -44,7 +41,7 @@ defineProps<{ commits: GitCommit[] }>()
             >
               {{ slotProps.item.message }}
             </span>
-            <span class="text-xs text-surface-400 dark:text-surface-400">{{
+            <span class="mb-2 text-xs text-surface-400 dark:text-surface-400">{{
               slotProps.item.author
             }}</span>
           </div>
@@ -56,7 +53,7 @@ defineProps<{ commits: GitCommit[] }>()
         <span>No commits</span>
       </div>
     </template>
-  </div>
+  </WidgetContainer>
 </template>
 
 <style>

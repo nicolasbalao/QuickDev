@@ -96,14 +96,14 @@ onMounted(async () => {
         </Dialog>
       </div>
     </div>
-    <div class="flex grow flex-col items-end justify-between">
+    <div class="flex h-full flex-col items-end overflow-y-hidden">
       <div class="flex h-full w-80 flex-col gap-4">
         <template v-if="project.workSessions">
-          <LatestWorkSession :work-sessions="project.workSessions" class="h-1/2" />
+          <LatestWorkSession :work-sessions="project.workSessions" />
         </template>
 
         <template v-if="project.latestCommits">
-          <LastestGitCommit :commits="project.latestCommits" class="h-1/2 overflow-y-auto" />
+          <LastestGitCommit :commits="project.latestCommits" />
         </template>
       </div>
     </div>
