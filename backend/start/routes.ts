@@ -21,7 +21,9 @@ router.group(() => {
   router.get('/projects', [ProjectsController, 'findAll'])
   router.post('/projects/github/clone', [ProjectsController, 'clone'])
   // IMPORTANT KEEP it last because :slug will overwrite /projects/templates etc...
-  router.get('/projects/:slug', [ProjectsController, 'findBySlug'])
+  router.get('/projects/:id', [ProjectsController, 'findById'])
+  // Remove it if is unused
+  router.get('/projects/slug/:slug', [ProjectsController, 'findBySlug'])
   router.get('/projects/:slug/details', [ProjectsController, 'getDetails'])
   router.get('/projects/:projectId/work-sessions', [WorkSessionsController, 'findByProject'])
 })

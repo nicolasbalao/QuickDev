@@ -27,3 +27,8 @@ export const cloneRepo = async (url: string): Promise<Project> => {
   const resp = await httpClient.post<Project>('/projects/github/clone', { url })
   return resp.data
 }
+
+export const projectDetailsById = async (id: number): Promise<Project> => {
+  const resp = await httpClient.get<Project>(`projects/${id}`)
+  return resp.data
+}

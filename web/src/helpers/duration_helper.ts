@@ -1,3 +1,5 @@
+import { Duration } from 'luxon'
+
 export const formatHoursDuration = (duration: number): string => {
   const hours = Math.floor(duration)
   const minutes = Math.round((duration - hours) * 60)
@@ -10,4 +12,15 @@ export const formatHoursDuration = (duration: number): string => {
   }
 
   return hoursString || minutesString || '0 min'
+}
+
+/**
+ * FORMAT: hh:mm:ss
+ *
+ * @param duration seconds
+ */
+export const formatDurationHHMMSS = (seconds: number): string => {
+  const duration = Duration.fromObject({ seconds })
+
+  return duration.toFormat('hh:mm:ss')
 }

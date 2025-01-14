@@ -120,6 +120,13 @@ export default class ProjectsController {
 
     return project
   }
+  async findById({ params }: HttpContext) {
+    const id = params.id
+
+    const project = Project.findOrFail(id)
+
+    return project
+  }
 
   async getDetails({ params }: HttpContext) {
     const slug = params.slug
