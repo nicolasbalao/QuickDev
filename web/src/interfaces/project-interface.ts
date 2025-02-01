@@ -11,9 +11,10 @@ export interface Project {
   description: string
   repoUrl: string | null
   publicRepo: boolean
-  created_at: Date
-  updated_at: Date
+  createdAt: string
+  updatedAt: Date
   latestCommits: GitCommit[]
   workSessions: WorkSession[]
+  totalHoursSpent: number
   [key: string]: any
 }

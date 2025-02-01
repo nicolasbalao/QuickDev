@@ -12,6 +12,8 @@ import { GithubService } from '#services/github_service'
 import { inject } from '@adonisjs/core'
 import ProjectTemplate from '#models/project_template'
 import { GitCommit, GroupedGitCommit } from '#interfaces/git_commit_interface'
+import WorkSession from '../models/work_session.js'
+import { Duration } from 'luxon'
 
 @inject()
 export default class ProjectsController {
@@ -140,6 +142,13 @@ export default class ProjectsController {
 
     let latestCommits = await getLatestGitCommits(project.path)
 
+    const totalHoursSpent = project.workSessions.reduce((total, session) => {
+      if (!session.duration) {
+        return total + 0
+      }
+      return total + session.duration
+    }, 0)
+
     if (project.repoUrl) {
       latestCommits = latestCommits.map((commit: any) => ({
         ...commit,
@@ -150,6 +159,7 @@ export default class ProjectsController {
     return {
       ...project.toJSON(),
       latestCommits,
+      totalHoursSpent
     }
   }
 

@@ -7,6 +7,8 @@ import { Button, Dialog, useToast } from 'primevue'
 import { useWorkSessionStore } from '../stores/work_session.store'
 import StopWorkSessionForm from '../components/StopWorkSessionForm.vue'
 import LatestWorkSession from '../components/LatestWorkSession.vue'
+import { formatDate } from '../helpers/date_helper'
+import { formatHoursDuration } from '../helpers/duration_helper'
 
 const route = useRoute()
 
@@ -95,15 +97,29 @@ onMounted(async () => {
         </Dialog>
       </div>
     </div>
-    <div class="flex h-full flex-col items-end overflow-y-hidden">
-      <div class="flex h-full w-80 flex-col gap-4">
-        <template v-if="project.workSessions">
-          <LatestWorkSession :work-sessions="project.workSessions" />
-        </template>
+    <div class="flex justify-between h-full">
+      <div>
+        <div
+          class="flex items-center justify-between rounded-md border border-solid border-surface-100 p-4 shadow-sm"
+        >
+          <div class="mr-8">
+            <h3 class="text-sm text-surface-400">Hours</h3>
+            <p class="mb-3 text-xl">{{ formatHoursDuration(project.totalHoursSpent) }}</p>
+            <p class="text-sm text-surface-400">from {{ formatDate(project.createdAt) }}</p>
+          </div>
+          <span class="pi pi-clock text-primary" style="font-size: 2.5rem"></span>
+        </div>
+      </div>
+      <div class="flex h-full flex-col items-end overflow-y-hidden">
+        <div class="flex h-full w-80 flex-col gap-4">
+          <template v-if="project.workSessions">
+            <LatestWorkSession :work-sessions="project.workSessions" />
+          </template>
 
-        <template v-if="project.latestCommits">
-          <LastestGitCommit :commits="project.latestCommits" />
-        </template>
+          <template v-if="project.latestCommits">
+            <LastestGitCommit :commits="project.latestCommits" />
+          </template>
+        </div>
       </div>
     </div>
   </section>
